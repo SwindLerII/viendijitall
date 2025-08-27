@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "title": "E-Ticaret Sitesi",
+      "client": "Ahmet Yılmaz",
+      "category": "E-Ticaret",
+      "description": "Bu proje Vien Dijital tarafından Ahmet Bey'e teslim edilmiştir.",
+      "technologies": [
+        "Next.js",
+        "Talwind.css"
+      ],
+      "image": "/uploads/project-1756325314042.jpg",
+      "status": "Tamamlandı",
+      "startDate": "2025-08-14",
+      "endDate": "2025-08-30",
+      "budget": "4500",
+      "url": "https://viendijital.com",
+      "featured": true,
+      "id": "1",
+      "createdAt": "2025-08-27T19:56:39.596Z",
+      "updatedAt": "2025-08-27T20:08:35.353Z"
+    },
+    {
+      "title": "Blog Sitesi",
+      "client": "Sercan Villa",
+      "category": "Landing Page",
+      "description": "Vien Dijital tarafından Sercan Bey'e teslim edilmiştir.",
+      "technologies": [
+        "WordPress",
+        "Elementor"
+      ],
+      "image": "/uploads/project-1756325437117.jpg",
+      "status": "Tamamlandı",
+      "startDate": "2025-08-22",
+      "endDate": "2025-08-29",
+      "budget": "3500",
+      "url": "https://viendijital.com",
+      "featured": true,
+      "id": "2",
+      "createdAt": "2025-08-27T20:10:38.918Z",
+      "updatedAt": "2025-08-27T20:10:38.918Z"
+    }
+  ]
+}

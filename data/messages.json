@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "clientName": "Python Programlama",
+      "clientEmail": "cihanenes63@gmail.com",
+      "subject": "Grup Paylaşım Projesi (Eleştiri)",
+      "message": "Grup Paylaşım Projesi (Eleştiri)",
+      "category": "general",
+      "priority": "low",
+      "id": "1",
+      "status": "replied",
+      "createdAt": "2025-08-27T20:26:24.166Z",
+      "reply": "Deneme Yanıt",
+      "repliedAt": "2025-08-27T20:26:32.284Z",
+      "updatedAt": "2025-08-27T20:26:32.284Z"
+    }
+  ]
+}
