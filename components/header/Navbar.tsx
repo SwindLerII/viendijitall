@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { HiMenu, HiX, HiOutlineArrowRight } from 'react-icons/hi';
+import { HiMenu, HiX, HiOutlineArrowRight, HiOutlineLogin } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 
@@ -20,32 +20,44 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState('');
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Handle scroll events
+  // Handle scroll events with throttling
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY;
+    setScrolled(scrollPosition > 20);
+    
+    // Calculate scroll progress
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollPosition / totalHeight) * 100;
+    setScrollProgress(Math.min(progress, 100));
+    
+    // Update active section based on scroll position
+    const sections = navItems.map(item => item.href.replace('#', '')).filter(id => id !== '/');
+    
+    for (const section of sections.reverse()) {
+      const element = document.getElementById(section);
+      if (element && window.scrollY >= element.offsetTop - 100) {
+        setActiveSection(section);
+        break;
+      }
+    }
+  }, []);
+
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setScrolled(scrollPosition > 20);
-      
-      // Calculate scroll progress
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollPosition / totalHeight) * 100;
-      setScrollProgress(Math.min(progress, 100));
-      
-      // Update active section based on scroll position
-      const sections = navItems.map(item => item.href.replace('#', '')).filter(id => id !== '/');
-      
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element && window.scrollY >= element.offsetTop - 100) {
-          setActiveSection(section);
-          break;
-        }
+    let ticking = false;
+    
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
       }
     };
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledScroll);
+  }, [handleScroll]);
 
   return (
     <motion.nav 
@@ -92,15 +104,15 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                                     <Link
-                     href={item.href}
-                     className={clsx(
-                       "font-medium px-5 py-2 rounded-full mx-1 transition-all duration-300 relative",
-                       isActive
-                         ? "text-primary-500 font-semibold" 
-                         : "text-secondary-800 hover:text-primary-500"
-                     )}
-                   >
+                  <Link
+                    href={item.href}
+                    className={clsx(
+                      "font-medium px-5 py-2 rounded-full mx-1 transition-all duration-300 relative",
+                      isActive
+                        ? "text-primary-500 font-semibold" 
+                        : "text-secondary-800 hover:text-primary-500"
+                    )}
+                  >
                     {item.name}
                     {isActive && (
                       <motion.span
@@ -113,15 +125,27 @@ export default function Navbar() {
               );
             })}
           </ul>
+          
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center space-x-3"
           >
-                         <Link 
-               href="#contact" 
-               className="btn ml-4 inline-flex items-center px-6 py-3 rounded-full font-medium transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-lg hover:shadow-primary-500/20 hover:scale-105"
-             >
+            {/* Admin Login Button */}
+            <Link 
+              href="/admin/login" 
+              className="inline-flex items-center px-4 py-2 rounded-full font-medium transition-all duration-300 border-2 border-primary-200 text-primary-600 hover:bg-primary-50 hover:border-primary-300"
+            >
+              <HiOutlineLogin className="w-4 h-4 mr-2" />
+              <span>Admin</span>
+            </Link>
+            
+            {/* Contact Button */}
+            <Link 
+              href="#contact" 
+              className="btn inline-flex items-center px-6 py-3 rounded-full font-medium transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-lg hover:shadow-primary-500/20 hover:scale-105"
+            >
               <span>Teklif Al</span>
               <HiOutlineArrowRight className="ml-2 w-5 h-5" />
             </Link>
@@ -142,73 +166,94 @@ export default function Navbar() {
       {/* Mobile Navigation */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="lg:hidden fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50"
-          >
-            <div className="p-6 h-full flex flex-col">
-              <div className="flex justify-between items-center mb-8">
-                <span className="text-xl font-bold text-secondary-800">Menü</span>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-full hover:bg-secondary-100 transition-colors"
-                >
-                  <HiX size={24} />
-                </button>
-              </div>
-              <ul className="space-y-1 flex-1">
-                {navItems.map((item, index) => {
-                  const isActive = activeSection === item.href.replace('#', '') || 
-                    (activeSection === '' && item.href === '/');
-                    
-                  return (
-                    <motion.li 
-                      key={item.name}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 * index }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={clsx(
-                          "block py-3 px-4 font-medium rounded-lg transition-colors",
-                          isActive
-                            ? "bg-gradient-to-r from-primary-50 to-primary-100/50 text-primary-500 font-semibold"
-                            : "text-secondary-700 hover:bg-secondary-50"
-                        )}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+              onClick={() => setIsOpen(false)}
+            />
+            
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="lg:hidden fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50"
+            >
+              <div className="p-6 h-full flex flex-col">
+                <div className="flex justify-between items-center mb-8">
+                  <span className="text-xl font-bold text-secondary-800">Menü</span>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 rounded-full hover:bg-secondary-100 transition-colors"
+                  >
+                    <HiX size={24} />
+                  </button>
+                </div>
+                
+                <ul className="space-y-1 flex-1">
+                  {navItems.map((item, index) => {
+                    const isActive = activeSection === item.href.replace('#', '') || 
+                      (activeSection === '' && item.href === '/');
+                      
+                    return (
+                      <motion.li 
+                        key={item.name}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.03 * index }}
                       >
-                        {item.name}
-                        {isActive && (
-                          <span className="float-right">
-                            <motion.div 
-                              animate={{ x: [0, 5, 0] }}
-                              transition={{ repeat: Infinity, duration: 1 }}
-                            >
+                        <Link
+                          href={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className={clsx(
+                            "block py-3 px-4 font-medium rounded-lg transition-colors",
+                            isActive
+                              ? "bg-gradient-to-r from-primary-50 to-primary-100/50 text-primary-500 font-semibold"
+                              : "text-secondary-700 hover:bg-secondary-50"
+                          )}
+                        >
+                          {item.name}
+                          {isActive && (
+                            <span className="float-right">
                               <HiOutlineArrowRight className="w-5 h-5" />
-                            </motion.div>
-                          </span>
-                        )}
-                      </Link>
-                    </motion.li>
-                  );
-                })}
-              </ul>
-              <div className="mt-auto pt-6">
-                <Link 
-                  href="#contact"
-                  onClick={() => setIsOpen(false)}
-                  className="btn w-full flex justify-center items-center py-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300"
-                >
-                  <span>Teklif Al</span>
-                  <HiOutlineArrowRight className="ml-2 w-5 h-5" />
-                </Link>
+                            </span>
+                          )}
+                        </Link>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+                
+                <div className="mt-auto pt-6 space-y-3">
+                  {/* Admin Login Button */}
+                  <Link 
+                    href="/admin/login"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full flex justify-center items-center py-3 px-4 rounded-lg border-2 border-primary-200 text-primary-600 font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+                  >
+                    <HiOutlineLogin className="w-5 h-5 mr-2" />
+                    <span>Admin Girişi</span>
+                  </Link>
+                  
+                  {/* Contact Button */}
+                  <Link 
+                    href="#contact"
+                    onClick={() => setIsOpen(false)}
+                    className="btn w-full flex justify-center items-center py-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300"
+                  >
+                    <span>Teklif Al</span>
+                    <HiOutlineArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.nav>
