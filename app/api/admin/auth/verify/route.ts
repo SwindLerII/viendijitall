@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { token } = await request.json();
+    const adminToken = request.cookies.get('adminToken')?.value;
 
-    if (!token) {
+    if (!adminToken) {
       return NextResponse.json(
-        { valid: false, error: 'Token gerekli' },
-        { status: 400 }
+        { valid: false, error: 'Token bulunamadı' },
+        { status: 401 }
       );
     }
 
     try {
       // Token'ı doğrula
-      const decoded = verifyToken(token);
+      const decoded = verifyToken(adminToken);
       
       return NextResponse.json({
         valid: true,

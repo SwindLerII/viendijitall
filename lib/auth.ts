@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || '6a81852f5fa9aebf53e52bac8c8c7c0220dad147f04da9151cfd5abee1a40cb1e97249d32d97765c12b59df5ecdf4e53e9a0b56eff81e80f9fd930e5a7da013a';
 const ADMIN_FILE_PATH = path.join(process.cwd(), 'data', 'admin.json');
 
 interface AdminUser {

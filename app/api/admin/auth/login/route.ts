@@ -43,9 +43,9 @@ export async function POST(request: NextRequest) {
 
     // Güvenli HTTP-only cookie oluştur
     response.cookies.set('adminToken', result.token!, {
-      httpOnly: false, // Client-side'dan okunabilir olsun
+      httpOnly: true, // Güvenlik için HTTP-only
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Daha esnek
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60, // 24 saat
       path: '/'
     });

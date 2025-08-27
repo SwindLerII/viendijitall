@@ -36,30 +36,31 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    // Basit authentication kontrolü
+    // Authentication kontrolü
     const checkAuth = async () => {
       try {
         console.log('🔍 Authentication kontrolü başlatılıyor...');
         
-        // Cookie'den token'ı al
-        const cookies = document.cookie.split(';');
-        const adminTokenCookie = cookies.find(cookie => 
-          cookie.trim().startsWith('adminToken=')
-        );
+        const response = await fetch('/api/admin/auth/verify');
+        console.log('📡 Auth response status:', response.status);
         
-        console.log('🔑 Admin token cookie:', adminTokenCookie);
-        
-        if (!adminTokenCookie) {
-          console.log('❌ Admin token bulunamadı, login\'e yönlendiriliyor...');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📄 Auth response data:', data);
+          
+          if (data.valid) {
+            console.log('✅ Authentication başarılı, dashboard yükleniyor...');
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            fetchStats();
+          } else {
+            console.log('❌ Authentication başarısız, login\'e yönlendiriliyor...');
+            router.push('/admin/login');
+          }
+        } else {
+          console.log('❌ Auth response error, login\'e yönlendiriliyor...');
           router.push('/admin/login');
-          return;
         }
-
-        // Şimdilik sadece token varlığını kontrol et
-        console.log('✅ Token bulundu, dashboard yükleniyor...');
-        setIsAuthenticated(true);
-        setIsLoading(false);
-        fetchStats();
         
       } catch (error) {
         console.error('❌ Authentication error:', error);
