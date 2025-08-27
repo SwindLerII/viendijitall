@@ -9,3 +9,12 @@ NODE_ENV=production
 
 # Next.js Configuration
 NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
+
+# Build Configuration
+NEXT_TELEMETRY_DISABLED=1
+
+# IMPORTANT: Bu değerleri Vercel Dashboard'da ekleyin:
+# 1. Project Settings > Environment Variables
+# 2. Her environment için (Production, Preview, Development) ekleyin
+# 3. JWT_SECRET değerini mutlaka ekleyin
+# 4. Değişiklikleri kaydettikten sonra Redeploy yapın
