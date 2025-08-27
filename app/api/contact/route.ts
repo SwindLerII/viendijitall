@@ -25,6 +25,7 @@ export async function POST(request: Request) {
 
     // Mesajı kaydet
     const newMessage = await addMessage({
+      clientId: `contact-${Date.now()}`, // Geçici ID
       clientName: name,
       clientEmail: email,
       subject,

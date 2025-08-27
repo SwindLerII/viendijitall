@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Dosya yükleme hatası:', error);
     console.error('❌ Hata detayı:', {
-      message: error.message,
-      stack: error.stack
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     });
     return NextResponse.json(
       { error: 'Dosya yüklenemedi' },

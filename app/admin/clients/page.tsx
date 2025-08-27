@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
@@ -58,6 +58,37 @@ export default function ClientsManagement() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'new' | 'read' | 'replied'>('all');
   const [filterCategory, setFilterCategory] = useState<'all' | 'general' | 'support' | 'quote' | 'complaint'>('all');
 
+  const fetchClients = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/clients');
+      if (response.ok) {
+        const data = await response.json();
+        setClients(data);
+      }
+    } catch (error) {
+      console.error('Müşteriler yüklenemedi:', error);
+    }
+  }, []);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/messages');
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data);
+      }
+    } catch (error) {
+      console.error('Mesajlar yüklenemedi:', error);
+    }
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    await Promise.all([
+      fetchClients(),
+      fetchMessages()
+    ]);
+  }, [fetchClients, fetchMessages]);
+
   useEffect(() => {
     // Authentication kontrolü
     const checkAuth = async () => {
@@ -92,38 +123,7 @@ export default function ClientsManagement() {
     }, 5000); // Her 5 saniyede bir kontrol et
 
     return () => clearInterval(interval);
-  }, [router, isAuthenticated]);
-
-  const fetchData = async () => {
-    await Promise.all([
-      fetchClients(),
-      fetchMessages()
-    ]);
-  };
-
-  const fetchClients = async () => {
-    try {
-      const response = await fetch('/api/admin/clients');
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data);
-      }
-    } catch (error) {
-      console.error('Müşteriler yüklenemedi:', error);
-    }
-  };
-
-  const fetchMessages = async () => {
-    try {
-      const response = await fetch('/api/admin/messages');
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data);
-      }
-    } catch (error) {
-      console.error('Mesajlar yüklenemedi:', error);
-    }
-  };
+  }, [router, isAuthenticated, fetchData, fetchMessages]);
 
   const handleMessageStatus = async (messageId: string, status: Message['status']) => {
     try {

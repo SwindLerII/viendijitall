@@ -4,8 +4,83 @@ import path from 'path';
 // JSON dosyalarının yolu
 const dataDir = path.join(process.cwd(), 'data');
 
+// Interface'ler
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  status: string;
+  budget: string;
+  client: string;
+  startDate: string;
+  endDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ProjectInput {
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  status: string;
+  budget: string;
+  client: string;
+  startDate: string;
+  endDate?: string;
+}
+
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  status: 'Aktif' | 'Pasif' | 'Potansiyel';
+  createdAt: string;
+  lastContact?: string;
+  totalProjects: number;
+  totalRevenue: number;
+}
+
+interface ClientInput {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  status: 'Aktif' | 'Pasif' | 'Potansiyel';
+}
+
+interface Message {
+  id: string;
+  clientId: string;
+  clientName: string;
+  clientEmail: string;
+  subject: string;
+  message: string;
+  status: 'new' | 'read' | 'replied' | 'closed';
+  createdAt: string;
+  updatedAt?: string;
+  category: 'general' | 'support' | 'quote' | 'complaint';
+  priority: 'low' | 'medium' | 'high';
+  reply?: string;
+  repliedAt?: string;
+}
+
+interface MessageInput {
+  clientId: string;
+  clientName: string;
+  clientEmail: string;
+  subject: string;
+  message: string;
+  category: 'general' | 'support' | 'quote' | 'complaint';
+  priority: 'low' | 'medium' | 'high';
+}
+
 // Projeleri oku
-export async function getProjects() {
+export async function getProjects(): Promise<Project[]> {
   try {
     const filePath = path.join(dataDir, 'projects.json');
     const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -18,7 +93,7 @@ export async function getProjects() {
 }
 
 // Proje ekle
-export async function addProject(project: any) {
+export async function addProject(project: ProjectInput) {
   try {
     const projects = await getProjects();
     const newProject = {
@@ -41,10 +116,10 @@ export async function addProject(project: any) {
 }
 
 // Proje güncelle
-export async function updateProject(id: string, updates: any) {
+export async function updateProject(id: string, updates: Partial<ProjectInput>) {
   try {
     const projects = await getProjects();
-    const projectIndex = projects.findIndex(p => p.id === id);
+    const projectIndex = projects.findIndex((p: Project) => p.id === id);
     
     if (projectIndex === -1) {
       throw new Error('Proje bulunamadı');
@@ -70,7 +145,7 @@ export async function updateProject(id: string, updates: any) {
 export async function deleteProject(id: string) {
   try {
     const projects = await getProjects();
-    const filteredProjects = projects.filter(p => p.id !== id);
+    const filteredProjects = projects.filter((p: Project) => p.id !== id);
     
     const filePath = path.join(dataDir, 'projects.json');
     fs.writeFileSync(filePath, JSON.stringify({ projects: filteredProjects }, null, 2));
@@ -83,7 +158,7 @@ export async function deleteProject(id: string) {
 }
 
 // Müşterileri oku
-export async function getClients() {
+export async function getClients(): Promise<Client[]> {
   try {
     const filePath = path.join(dataDir, 'clients.json');
     const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -96,7 +171,7 @@ export async function getClients() {
 }
 
 // Müşteri ekle
-export async function addClient(client: any) {
+export async function addClient(client: ClientInput) {
   try {
     const clients = await getClients();
     const newClient = {
@@ -121,10 +196,10 @@ export async function addClient(client: any) {
 }
 
 // Müşteri güncelle
-export async function updateClient(id: string, updates: any) {
+export async function updateClient(id: string, updates: Partial<ClientInput>) {
   try {
     const clients = await getClients();
-    const clientIndex = clients.findIndex(c => c.id === id);
+    const clientIndex = clients.findIndex((c: Client) => c.id === id);
     
     if (clientIndex === -1) {
       throw new Error('Müşteri bulunamadı');
@@ -229,7 +304,7 @@ export async function getStats() {
 }
 
 // Mesajları oku
-export async function getMessages() {
+export async function getMessages(): Promise<Message[]> {
   try {
     const filePath = path.join(dataDir, 'messages.json');
     if (!fs.existsSync(filePath)) {
@@ -248,13 +323,13 @@ export async function getMessages() {
 }
 
 // Mesaj ekle
-export async function addMessage(message: any) {
+export async function addMessage(message: MessageInput) {
   try {
     const messages = await getMessages();
-    const newMessage = {
+    const newMessage: Message = {
       ...message,
       id: (messages.length + 1).toString(),
-      status: 'new',
+      status: 'new' as const,
       createdAt: new Date().toISOString()
     };
     
@@ -271,10 +346,10 @@ export async function addMessage(message: any) {
 }
 
 // Mesaj güncelle
-export async function updateMessage(id: string, updates: any) {
+export async function updateMessage(id: string, updates: Partial<MessageInput>) {
   try {
     const messages = await getMessages();
-    const messageIndex = messages.findIndex(m => m.id === id);
+    const messageIndex = messages.findIndex((m: Message) => m.id === id);
     
     if (messageIndex === -1) {
       throw new Error('Mesaj bulunamadı');
@@ -300,7 +375,7 @@ export async function updateMessage(id: string, updates: any) {
 export async function replyToMessage(id: string, reply: string) {
   try {
     const messages = await getMessages();
-    const messageIndex = messages.findIndex(m => m.id === id);
+    const messageIndex = messages.findIndex((m: Message) => m.id === id);
     
     if (messageIndex === -1) {
       throw new Error('Mesaj bulunamadı');

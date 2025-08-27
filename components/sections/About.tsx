@@ -31,7 +31,7 @@ export default function About() {
                 <div className="relative z-10 p-6 sm:p-8 text-white h-full flex flex-col justify-center">
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 font-heading">Vien Dijital</h3>
                   <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
-                    2018'den beri 100+ müşteriye 150+ projede hizmet verdik. Amacımız, işinizi büyütmenize yardımcı olacak dijital çözümler sunmak.
+                    2018&apos;den beri 100+ müşteriye 150+ projede hizmet verdik. Amacımız, işinizi büyütmenize yardımcı olacak dijital çözümler sunmak.
                   </p>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div className="border border-white/30 rounded-lg p-3 sm:p-4 text-center">

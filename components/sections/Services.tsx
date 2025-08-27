@@ -102,9 +102,9 @@ const services = [
 
 export default function Services() {
   const [activeService, setActiveService] = useState('web');
-  const [hoveredService, setHoveredService] = useState(null);
+  const [hoveredService, setHoveredService] = useState<string | null>(null);
 
-  const selectedService = services.find(s => s.id === activeService);
+  const selectedService = services.find(s => s.id === activeService) || services[0];
 
   return (
     <section id="services" className="section py-20 md:py-32 bg-white relative overflow-hidden">

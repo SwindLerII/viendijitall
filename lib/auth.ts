@@ -38,8 +38,8 @@ export function getAdminData(): AdminData {
   } catch (error) {
     console.error('❌ Admin verileri okunamadı:', error);
     console.error('❌ Hata detayı:', {
-      message: error.message,
-      code: error.code,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      code: error instanceof Error && 'code' in error ? (error as any).code : undefined,
       path: ADMIN_FILE_PATH
     });
     throw new Error('Admin verileri okunamadı');

@@ -21,6 +21,10 @@
     "lint": "next lint",
     "setup-admin": "node scripts/setup-admin.js"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.0",
