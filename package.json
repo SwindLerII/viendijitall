@@ -16,11 +16,11 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/vercel-build.js && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "setup-admin": "node scripts/setup-admin.js",
-    "vercel-build": "npm run build"
+    "vercel-build": "node scripts/vercel-build.js && next build"
   },
   "engines": {
     "node": ">=18.0.0",
